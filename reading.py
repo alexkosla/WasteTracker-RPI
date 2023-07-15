@@ -4,6 +4,8 @@
 import RPi.GPIO as GPIO
 from hcsr04sensor import sensor
 import datetime
+import requests 
+import json
 
 # This script uses a static method inside the Measurement class
 # called basic_distance
@@ -32,8 +34,27 @@ distance_room_temp = x.basic_distance(trig, echo, celsius=temp)
 print("The distance at  20 Celsius is {} cm".format(distance_default))
 print("The distance at  25 Celsius is {} cm".format(distance_room_temp))
 
-timestamp_curr = datetime.datetime.now()
+# https://stackoverflow.com/questions/11040177/datetime-round-trim-number-of-digits-in-microseconds
+timestamp_curr = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
 print("the current time is {}".format(timestamp_curr))
 
 # cleanup gpio pins.
 GPIO.cleanup((trig, echo))
+
+data = {}
+data['distance'] = distance_default
+data['time'] = timestamp_curr
+
+# https://stackoverflow.com/questions/11875770/how-to-overcome-datetime-datetime-not-json-serializable
+body = json.dumps(data, default=str)
+print(body)
+
+post_url = "http://192.168.0.199:8080/readings/create"
+get_url = "http://192.168.0.199:8080/readings/getAll"
+response = requests.post(post_url, data=body, headers={"Content-Type": "application/json"})
+# response = requests.get(get_url)
+
+if response.status_code != 200:
+    print("Error: {}".format(response.status_code))
+
+print(response.text)
