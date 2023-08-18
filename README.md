@@ -13,7 +13,8 @@ To run the file once, simply run it from the command line.
 
 To run the file every thirty minutes on Linux, set up a crontab via the command `crontab -e`. Add in the following lines:
 
-0 * * * * python3 /path/to/file/reading.py
-30 * * * * python3 /path/to/file/reading.py
+`0 * * * * python3 /path/to/file/reading.py`
+
+`30 * * * * python3 /path/to/file/reading.py`
 
 Save it and your raspberry pi will read the sensor data every 30 minutes and send a POST request to the web server of your choosing.
